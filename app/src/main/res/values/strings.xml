@@ -11,6 +11,8 @@
     <string name="delete_file_success">File deleted successfully</string>
     <string name="delete_file_error">Error deleting file</string>
     <string name="list_fetch_error">Error fetching list</string>
+    <string name="no_videos_yet">There are no videos yet</string>
+    <string name="create_file_error">Error creating temp file</string>
 
 
 </resources>

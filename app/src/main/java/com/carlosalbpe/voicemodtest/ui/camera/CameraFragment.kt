@@ -13,6 +13,7 @@ import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -33,7 +34,7 @@ import kotlin.coroutines.suspendCoroutine
 
 /**
  *
- * Modified version of
+ * Modified version of CameraFragment from https://github.com/android/camera-samples
  *
  */
 class CameraFragment @Inject constructor() : DaggerFragment() {
@@ -55,8 +56,6 @@ class CameraFragment @Inject constructor() : DaggerFragment() {
     private lateinit var characteristics: CameraCharacteristics
 
     private val recorderSurface: Surface by lazy {
-
-        outputFile = fileStorage.createFile()
 
         val surface = MediaCodec.createPersistentInputSurface()
 
@@ -101,8 +100,16 @@ class CameraFragment @Inject constructor() : DaggerFragment() {
     override fun onDestroyView() {
         //If we haven't recorded anything, we destroy the temp file.
         if (!recordingStarted){
-            outputFile.delete()
+            fileStorage.deleteFile(outputFile.absolutePath).observe(viewLifecycleOwner, Observer { result->
+                if (result.status == Status.SUCCESS) {
+                    //OK!!!!
+                }else if (result.status == Status.ERROR){
+                    context?.toast(getString(R.string.delete_file_error))
+                    findNavController().popBackStack()
+                }
+            })
         }
+
         super.onDestroyView()
     }
 
@@ -117,8 +124,21 @@ class CameraFragment @Inject constructor() : DaggerFragment() {
         viewModel = ViewModelProvider(this, viewModelFactory).get(CameraViewModel::class.java)
     }
 
+    private fun createTempFile(){
+        fileStorage.createFile().observe(viewLifecycleOwner, Observer { result->
+            if (result.status == Status.SUCCESS) {
+                outputFile = result.data!!
+            }else if (result.status == Status.ERROR){
+                context?.toast(getString(R.string.create_file_error))
+                findNavController().popBackStack()
+            }
+        })
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        createTempFile()
 
         viewFinder = view_finder
 

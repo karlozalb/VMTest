@@ -24,6 +24,12 @@ import android.view.Display
 import kotlin.math.max
 import kotlin.math.min
 
+/**
+ *
+ * This class is part of https://github.com/android/camera-samples and a dependency of CameraFragment
+ *
+ */
+
 /** Helper class used to pre-compute shortest and longest sides of a [Size] */
 class SmartSize(width: Int, height: Int) {
     var size = Size(width, height)

@@ -6,6 +6,11 @@ import android.util.Log
 import android.view.SurfaceView
 import kotlin.math.roundToInt
 
+/**
+ *
+ * Class extracted from https://github.com/android/camera-samples
+ *
+ */
 class AutoFitSurfaceView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -36,7 +41,7 @@ class AutoFitSurfaceView @JvmOverloads constructor(
             setMeasuredDimension(width, height)
         } else {
 
-            // Performs center-crop transformation of the camera frames
+            // center-crop
             val newWidth: Int
             val newHeight: Int
             val actualRatio = if (width > height) aspectRatio else 1f / aspectRatio

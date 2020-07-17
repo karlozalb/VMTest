@@ -1,14 +1,13 @@
 package com.carlosalbpe.voicemodtest.framework.di
 
 import android.app.Application
-import android.content.Context
 import androidx.room.Room
 import com.carlosalbpe.voicemodtest.business.data.VideoDataSource
 import com.carlosalbpe.voicemodtest.business.data.VideoRepository
 import com.carlosalbpe.voicemodtest.framework.database.VideoDatabase
 import com.carlosalbpe.voicemodtest.framework.io.FileStorage
 import com.carlosalbpe.voicemodtest.framework.io.InternalFileStorage
-import com.carlosalbpe.voicemodtest.framework.repository.VideoLocalDataSourceImpl
+import com.carlosalbpe.voicemodtest.framework.datasources.VideoLocalDataSourceImpl
 import dagger.Module
 import dagger.Provides
 
@@ -29,8 +28,8 @@ class IOModule {
 
     @AppScoped
     @Provides
-    fun provideDataSource(database : VideoDatabase, fileStorage: FileStorage) : VideoDataSource{
-        return VideoLocalDataSourceImpl(database, fileStorage)
+    fun provideDataSource(database : VideoDatabase) : VideoDataSource{
+        return VideoLocalDataSourceImpl(database)
     }
 
     @AppScoped

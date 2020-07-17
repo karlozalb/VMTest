@@ -1,14 +1,13 @@
-package com.carlosalbpe.voicemodtest.framework.repository
+package com.carlosalbpe.voicemodtest.framework.datasources
 
 import com.carlosalbpe.voicemodtest.business.data.VideoDataSource
 import com.carlosalbpe.voicemodtest.framework.database.VideoDatabase
 import com.carlosalbpe.voicemodtest.business.domain.VideoInfo
 import com.carlosalbpe.voicemodtest.framework.io.FileStorage
 import java.io.File
-import java.nio.file.FileStore
 import javax.inject.Inject
 
-class VideoLocalDataSourceImpl @Inject constructor(val db : VideoDatabase, val fileStorage: FileStorage) : VideoDataSource {
+class VideoLocalDataSourceImpl @Inject constructor(val db : VideoDatabase) : VideoDataSource {
 
     override suspend fun getVideos(): List<VideoInfo> {
         return db.videoInfoDao().getAll()
@@ -29,8 +28,6 @@ class VideoLocalDataSourceImpl @Inject constructor(val db : VideoDatabase, val f
 
     override suspend fun deleteVideo(video: VideoInfo): Boolean {
         db.videoInfoDao().delete(video)
-        fileStorage.deleteFile(video.path)
-
         return true
     }
 
