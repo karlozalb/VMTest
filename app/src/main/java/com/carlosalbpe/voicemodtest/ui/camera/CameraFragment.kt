@@ -264,22 +264,20 @@ class CameraFragment @Inject constructor() : DaggerFragment() {
                     recorder.stop()
 
                     MediaScannerConnection.scanFile(
-                        view.context, arrayOf(outputFile.absolutePath), null, null)
+                    view.context, arrayOf(outputFile.absolutePath), null, null)
 
-                    lifecycleScope.launch {
-                        withContext(Dispatchers.Main) {
-                            viewModel.saveVideo(outputFile).observe(viewLifecycleOwner, androidx.lifecycle.Observer {result ->
-                                when (result.status) {
-                                    Status.SUCCESS -> {
-                                        Toast.makeText(requireContext(), getString(R.string.video_saved_successfully), Toast.LENGTH_SHORT).show()
-                                        goBack()
-                                    }
-                                    Status.ERROR -> {
-                                        context?.toast(getString(R.string.video_error))
-                                    }
+                    withContext(Dispatchers.Main) {
+                        viewModel.saveVideo(outputFile).observe(viewLifecycleOwner, androidx.lifecycle.Observer {result ->
+                            when (result.status) {
+                                Status.SUCCESS -> {
+                                    Toast.makeText(requireContext(), getString(R.string.video_saved_successfully), Toast.LENGTH_SHORT).show()
+                                    goBack()
                                 }
-                            })
-                        }
+                                Status.ERROR -> {
+                                    context?.toast(getString(R.string.video_error))
+                                }
+                            }
+                        })
                     }
                 }
             }
