@@ -15,6 +15,7 @@ import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.carlosalbpe.voicemodtest.R
 import com.carlosalbpe.voicemodtest.framework.io.FileStorage
 import com.carlosalbpe.voicemodtest.framework.utils.Status
@@ -30,11 +31,15 @@ import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
 
-
+/**
+ *
+ * Modified version of
+ *
+ */
 class CameraFragment @Inject constructor() : DaggerFragment() {
 
-    lateinit var outputFile : File
-    lateinit var cameraId : String
+    private lateinit var outputFile : File
+    private lateinit var cameraId : String
 
     @Inject
     lateinit var cameraManager: CameraManager
@@ -49,20 +54,12 @@ class CameraFragment @Inject constructor() : DaggerFragment() {
 
     private lateinit var characteristics: CameraCharacteristics
 
-    private var height : Int = 0
-    private var width : Int = 0
-    private var fps : Int = 0
-
     private val recorderSurface: Surface by lazy {
 
         outputFile = fileStorage.createFile()
 
-        // Get a persistent Surface from MediaCodec, don't forget to release when done
         val surface = MediaCodec.createPersistentInputSurface()
 
-        // Prepare and release a dummy MediaRecorder with our new surface
-        // Required to allocate an appropriately sized buffer before passing the Surface as the
-        //  output target to the capture session
         createRecorder(surface).apply {
             prepare()
             release()
@@ -70,6 +67,10 @@ class CameraFragment @Inject constructor() : DaggerFragment() {
 
         surface
     }
+
+    private var cameraHeight : Int = 0
+    private var cameraWidth : Int = 0
+    private var cameraFps : Int = 0
 
     private val recorder: MediaRecorder by lazy { createRecorder(recorderSurface) }
 
@@ -98,54 +99,11 @@ class CameraFragment @Inject constructor() : DaggerFragment() {
      }
 
     override fun onDestroyView() {
+        //If we haven't recorded anything, we destroy the temp file.
         if (!recordingStarted){
             outputFile.delete()
         }
         super.onDestroyView()
-    }
-
-    fun configBackCamera(){
-        var cameraIds = cameraManager.cameraIdList
-
-        //Back camera
-        cameraId = cameraIds.first { cameraId ->
-            cameraManager.getCameraCharacteristics(cameraId)
-                .get(CameraCharacteristics.LENS_FACING) == CameraCharacteristics.LENS_FACING_BACK
-        }
-
-        //Camera properties
-        characteristics = cameraManager.getCameraCharacteristics(cameraId)
-        val cameraConfig = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)!!
-
-        var maxHeight : Int = 0
-        var maxWidth : Int = 0
-        var maxFps : Int = 0
-
-        //Get the config with the highest resolution (and the max fps for that resolution (CarlosA)
-        val targetClass = MediaRecorder::class.java
-        cameraConfig.getOutputSizes(targetClass).forEach { size ->
-            val seconds = cameraConfig.getOutputMinFrameDuration(targetClass, size) / 1000000000.0
-            val fps = if (seconds > 0) (1.0 / seconds).toInt() else 0
-            if (size.height >= maxHeight && size.width >= maxWidth) {
-                maxHeight = size.height
-                maxWidth = size.width
-                maxFps = if (fps > maxFps) fps else maxFps
-            }
-        }
-
-        height = maxHeight
-        width = maxWidth
-        fps = maxFps
-
-        requireContext().toast("$height x $width @ $fps")
-    }
-
-    fun isFrontCamera() : Boolean {
-        return cameraManager.getCameraCharacteristics(cameraId).get(CameraCharacteristics.LENS_FACING) == CameraCharacteristics.LENS_FACING_FRONT
-    }
-
-    fun isBackCamera() : Boolean{
-        return cameraManager.getCameraCharacteristics(cameraId).get(CameraCharacteristics.LENS_FACING) == CameraCharacteristics.LENS_FACING_BACK
     }
 
     override fun onCreateView(
@@ -187,21 +145,58 @@ class CameraFragment @Inject constructor() : DaggerFragment() {
         })
     }
 
-    fun getRotationDegreesForPortrait() : Int {
-        val cameraOrientation: Int = characteristics.get(CameraCharacteristics.SENSOR_ORIENTATION) ?: 0
+    fun configBackCamera(){
+        var cameraIds = cameraManager.cameraIdList
 
-        return cameraOrientation
+        //Back camera
+        cameraId = cameraIds.first { cameraId ->
+            isBackCamera(cameraId)
+        }
+
+        //Camera properties
+        characteristics = cameraManager.getCameraCharacteristics(cameraId)
+        val cameraConfig = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)!!
+
+        var maxHeight  = 0
+        var maxWidth = 0
+        var maxFps = 0
+
+        //Get the config with the highest resolution and the max fps for that resolution
+        val targetClass = MediaRecorder::class.java
+        cameraConfig.getOutputSizes(targetClass).forEach { size ->
+            val seconds = cameraConfig.getOutputMinFrameDuration(targetClass, size) / 1000000000.0
+            val fps = if (seconds > 0) (1.0 / seconds).toInt() else 0
+            if (size.height >= maxHeight && size.width >= maxWidth) {
+                maxHeight = size.height
+                maxWidth = size.width
+                maxFps = if (fps > maxFps) fps else maxFps
+            }
+        }
+
+        cameraHeight = maxHeight
+        cameraWidth = maxWidth
+        cameraFps = maxFps
+
+        requireContext().toast("$cameraHeight x $cameraWidth @ $cameraFps")
+    }
+
+    fun isFrontCamera(cameraId : String) : Boolean {
+        return cameraManager.getCameraCharacteristics(cameraId).get(CameraCharacteristics.LENS_FACING) == CameraCharacteristics.LENS_FACING_FRONT
+    }
+
+    fun isBackCamera(cameraId : String) : Boolean{
+        return cameraManager.getCameraCharacteristics(cameraId).get(CameraCharacteristics.LENS_FACING) == CameraCharacteristics.LENS_FACING_BACK
     }
 
     private fun createRecorder(surface: Surface) = MediaRecorder().apply {
         setAudioSource(MediaRecorder.AudioSource.MIC)
-        setOrientationHint(getRotationDegreesForPortrait())
+        setOrientationHint(90) //Back camera + portrait mode.
         setVideoSource(MediaRecorder.VideoSource.SURFACE)
         setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
         setOutputFile(outputFile.absolutePath)
         setVideoEncodingBitRate(RECORDER_VIDEO_BITRATE)
-        setVideoSize(width, height)
-        setVideoFrameRate(fps)
+        setVideoSize(cameraWidth, cameraHeight)
+        setVideoFrameRate(cameraFps)
         setVideoEncoder(MediaRecorder.VideoEncoder.H264)
         setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
         setInputSurface(surface)
@@ -209,12 +204,10 @@ class CameraFragment @Inject constructor() : DaggerFragment() {
 
     private fun initializeRequests() {
         previewRequest = session.device.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW).apply {
-            // Add the preview surface target
             addTarget(viewFinder.holder.surface)
         }.build()
 
         recordRequest = session.device.createCaptureRequest(CameraDevice.TEMPLATE_RECORD).apply {
-            // Add the preview and recording surface targets
             addTarget(viewFinder.holder.surface)
             addTarget(recorderSurface)
         }.build()
@@ -225,15 +218,18 @@ class CameraFragment @Inject constructor() : DaggerFragment() {
         // Open the selected camera (back camera in this specific case)
         camera = openCamera(cameraManager, cameraId, cameraHandler)
 
-        //Preview
         val targets = listOf(viewFinder.holder.surface, recorderSurface)
         session = createCaptureSession(camera, targets, cameraHandler)
+
+        initializeRequests()
+
+        //Preview
         session.setRepeatingRequest(previewRequest, null, cameraHandler)
+
 
         recording_button.setOnClickListener { view ->
 
             if (recording) {
-
                 recording = false
                 recording_button.background = getDrawable(requireContext(), R.drawable.record_red)
 
@@ -254,7 +250,10 @@ class CameraFragment @Inject constructor() : DaggerFragment() {
                         withContext(Dispatchers.Main) {
                             viewModel.saveVideo(outputFile).observe(viewLifecycleOwner, androidx.lifecycle.Observer {result ->
                                 when (result.status) {
-                                    Status.SUCCESS -> Toast.makeText(requireContext(), getString(R.string.video_saved_successfully), Toast.LENGTH_SHORT).show()
+                                    Status.SUCCESS -> {
+                                        Toast.makeText(requireContext(), getString(R.string.video_saved_successfully), Toast.LENGTH_SHORT).show()
+                                        goBack()
+                                    }
                                     Status.ERROR -> {
                                         context?.toast(getString(R.string.video_error))
                                     }
@@ -266,28 +265,30 @@ class CameraFragment @Inject constructor() : DaggerFragment() {
             }
             else
             {
-                recordingStarted = true;
-                recording = true
-                recording_button.background = getDrawable(requireContext(), R.drawable.stop_red)
+                if (!recordingStarted) {
+                    recordingStarted = true;
+                    recording = true
+                    recording_button.background = getDrawable(requireContext(), R.drawable.stop_red)
 
-                lifecycleScope.launch(Dispatchers.IO) {
+                    lifecycleScope.launch(Dispatchers.IO) {
 
-                    // Prevents screen rotation during the video recording
-                    requireActivity().requestedOrientation =
-                        ActivityInfo.SCREEN_ORIENTATION_LOCKED
+                        // Prevents screen rotation during the video recording
+                        requireActivity().requestedOrientation =
+                            ActivityInfo.SCREEN_ORIENTATION_LOCKED
 
-                    // Start recording repeating requests, which will stop the ongoing preview
-                    //  repeating requests without having to explicitly call `session.stopRepeating`
-                    session.setRepeatingRequest(recordRequest, null, cameraHandler)
+                        // Start recording repeating requests, which will stop the ongoing preview
+                        //  repeating requests without having to explicitly call `session.stopRepeating`
+                        session.setRepeatingRequest(recordRequest, null, cameraHandler)
 
-                    // Finalizes recorder setup and starts recording
-                    recorder.apply {
-                        // Sets output orientation based on current sensor value at start time
-                        prepare()
-                        start()
+                        // Finalizes recorder setup and starts recording
+                        recorder.apply {
+                            // Sets output orientation based on current sensor value at start time
+                            prepare()
+                            start()
+                        }
+                        recordingStartMillis = System.currentTimeMillis()
+                        Log.d(TAG, "Recording started")
                     }
-                    recordingStartMillis = System.currentTimeMillis()
-                    Log.d(TAG, "Recording started")
                 }
             }
 
@@ -331,9 +332,6 @@ class CameraFragment @Inject constructor() : DaggerFragment() {
         targets: List<Surface>,
         handler: Handler? = null
     ): CameraCaptureSession = suspendCoroutine { cont ->
-
-        // Creates a capture session using the predefined targets, and defines a session state
-        // callback which resumes the coroutine once the session is configured
         device.createCaptureSession(targets, object: CameraCaptureSession.StateCallback() {
 
             override fun onConfigured(session: CameraCaptureSession) = cont.resume(session)
@@ -344,6 +342,10 @@ class CameraFragment @Inject constructor() : DaggerFragment() {
                 cont.resumeWithException(exc)
             }
         }, handler)
+    }
+
+    fun goBack() {
+        findNavController().popBackStack()
     }
 
     override fun onStop() {
@@ -365,7 +367,7 @@ class CameraFragment @Inject constructor() : DaggerFragment() {
     companion object {
         private val TAG = CameraFragment::class.java.simpleName
 
-        private const val RECORDER_VIDEO_BITRATE: Int = 10_000_000
+        private const val RECORDER_VIDEO_BITRATE: Int = 10000000
         private const val MIN_REQUIRED_RECORDING_TIME_MILLIS: Long = 1000L
     }
 
