@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">VoicemodTest</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+
+    <string name="video_saved_successfully">Video saved successfully!</string>
+    <string name="video_error">There was an error :(</string>
+
+    <string name="delete_file_success">File deleted successfully</string>
+    <string name="delete_file_error">Error deleting file</string>
+    <string name="list_fetch_error">Error fetching list</string>
+
+
+</resources>

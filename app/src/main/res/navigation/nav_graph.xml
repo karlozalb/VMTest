@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/VideoListFragment">
+
+    <fragment
+        android:id="@+id/VideoListFragment"
+        android:name="com.carlosalbpe.voicemodtest.ui.videolistfragment.VideoListFragment"
+        android:label="@string/video_error"
+        tools:layout="@layout/video_list_fragment">
+        <action
+            android:id="@+id/action_VideoFragment_to_cameraFragment"
+            app:destination="@id/cameraFragment" />
+        <action
+            android:id="@+id/action_VideoFragment_to_videoPlayerFragment"
+            app:destination="@id/videoPlayerFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/cameraFragment"
+        android:name="com.carlosalbpe.voicemodtest.ui.camera.CameraFragment"
+        android:label="CameraFragment" />
+    <fragment
+        android:id="@+id/videoPlayerFragment"
+        android:name="com.carlosalbpe.voicemodtest.ui.videofragment.VideoPlayerFragment"
+        android:label="fragment_video_player"
+        tools:layout="@layout/fragment_video_player" >
+        <argument
+            android:name="id"
+            app:argType="long" />
+    </fragment>
+</navigation>
