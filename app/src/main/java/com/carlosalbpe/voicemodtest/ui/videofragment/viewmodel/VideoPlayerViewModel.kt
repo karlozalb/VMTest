@@ -25,6 +25,7 @@ class VideoPlayerViewModel @Inject constructor(private val getVideoUseCase: GetV
     private fun fetchVideo(id : Long) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
+                videoLd.postValue(Result(status = Status.LOADING))
                 videoLd.postValue(Result(status = Status.SUCCESS, message = "Ok", data = getVideoUseCase(id)))
             } catch (error : Exception) {
                 videoLd.postValue(Result(status = Status.ERROR, message = error.message ?: ""))

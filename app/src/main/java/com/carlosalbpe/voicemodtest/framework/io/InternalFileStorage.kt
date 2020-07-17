@@ -6,7 +6,7 @@ import java.io.File
 class InternalFileStorage(private val context : Context) : FileStorage {
 
     override fun createFile(): File {
-        return File(context?.filesDir, "VoicemodTest_${System.currentTimeMillis()}.$fileExtension")
+        return File(context?.filesDir, "VoicemodTest_${System.currentTimeMillis()}.$FILE_EXTENSION")
     }
 
     override fun getFile(path: String): File {
@@ -18,7 +18,7 @@ class InternalFileStorage(private val context : Context) : FileStorage {
     }
 
     companion object {
-        const val fileExtension = ".mp4"
+        const val FILE_EXTENSION = ".mp4"
     }
 
 }

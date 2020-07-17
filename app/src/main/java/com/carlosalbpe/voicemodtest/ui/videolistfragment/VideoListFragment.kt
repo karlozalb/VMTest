@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -31,7 +30,6 @@ class VideoListFragment @Inject constructor() : DaggerFragment() {
             inflater: LayoutInflater, container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.video_list_fragment, container, false)
     }
 
@@ -70,9 +68,6 @@ class VideoListFragment @Inject constructor() : DaggerFragment() {
         viewModel.getVideos().observe(viewLifecycleOwner, Observer {result ->
             if (result.status == Status.SUCCESS) {
                 videosAdapter.setItems(result.data)
-
-                //TODO("BORRA ESTA BASURA")
-                requireContext().fileList().forEach { System.out.println(it) }
             }else{
                 context?.toast(getString(R.string.list_fetch_error))
             }

@@ -16,6 +16,7 @@ class CameraViewModel @Inject constructor(private val saveVideoUseCase : SaveVid
      */
     fun saveVideo(file : File) = liveData<Result<Unit>>(Dispatchers.IO) {
         try {
+            emit(Result(status = Status.LOADING))
             saveVideoUseCase(file)
             emit(Result(status = Status.SUCCESS, message = "Ok"))
         } catch (error : Exception) {
