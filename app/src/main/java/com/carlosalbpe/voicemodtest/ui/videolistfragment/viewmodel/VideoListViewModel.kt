@@ -4,14 +4,21 @@ import androidx.lifecycle.*
 import com.carlosalbpe.voicemodtest.business.domain.VideoInfo
 import com.carlosalbpe.voicemodtest.business.usecase.DeleteVideoUseCase
 import com.carlosalbpe.voicemodtest.business.usecase.GetVideosUseCase
+import com.carlosalbpe.voicemodtest.framework.utils.BaseViewModel
 import com.carlosalbpe.voicemodtest.framework.utils.Result
 import com.carlosalbpe.voicemodtest.framework.utils.Status
+import com.carlosalbpe.voicemodtest.ui.utils.getDispatcher
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.lang.Exception
 import javax.inject.Inject
 
-class VideoListViewModel @Inject constructor(private val getVideosUseCase: GetVideosUseCase, private val deleteVideoUseCase: DeleteVideoUseCase): ViewModel() {
+class VideoListViewModel @Inject constructor(private val getVideosUseCase: GetVideosUseCase, private val deleteVideoUseCase: DeleteVideoUseCase, private val dispatcher : CoroutineDispatcher? = null): BaseViewModel() {
+
+    init {
+        defaultDispatcher = Dispatchers.IO
+    }
 
     private val videosLd = MutableLiveData<Result<List<VideoInfo>>>()
 
@@ -20,9 +27,8 @@ class VideoListViewModel @Inject constructor(private val getVideosUseCase: GetVi
         return videosLd
     }
 
-    fun deleteVideo(video : VideoInfo) = liveData(Dispatchers.IO) {
+    fun deleteVideo(video : VideoInfo) = liveData(getDispatcher(dispatcher,defaultDispatcher)) {
         try {
-            emit(Result(status = Status.LOADING))
             emit(Result(status = Status.SUCCESS, message = "Ok", data = deleteVideoUseCase(video)))
             fetchVideos()
         } catch (error : Exception) {
@@ -32,9 +38,8 @@ class VideoListViewModel @Inject constructor(private val getVideosUseCase: GetVi
     }
 
     private fun fetchVideos() {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(getDispatcher(dispatcher,defaultDispatcher)) {
             try {
-                videosLd.postValue(Result(status = Status.LOADING))
                 videosLd.postValue(Result(status = Status.SUCCESS, message = "Ok", data = getVideosUseCase()))
             } catch (error : Exception) {
                 videosLd.postValue(Result(status = Status.ERROR, message = error.message ?: ""))

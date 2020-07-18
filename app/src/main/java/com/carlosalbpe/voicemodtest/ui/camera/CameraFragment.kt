@@ -69,7 +69,6 @@ class CameraFragment @Inject constructor() : DaggerFragment() {
 
     private var cameraHeight : Int = 0
     private var cameraWidth : Int = 0
-    private var cameraFps : Int = 0
 
     private val recorder: MediaRecorder by lazy { createRecorder(recorderSurface) }
 
@@ -179,25 +178,21 @@ class CameraFragment @Inject constructor() : DaggerFragment() {
 
         var maxHeight  = 0
         var maxWidth = 0
-        var maxFps = 0
 
         //Get the config with the highest resolution and the max fps for that resolution
         val targetClass = MediaRecorder::class.java
         cameraConfig.getOutputSizes(targetClass).forEach { size ->
             val seconds = cameraConfig.getOutputMinFrameDuration(targetClass, size) / 1000000000.0
-            val fps = if (seconds > 0) (1.0 / seconds).toInt() else 0
             if (size.height >= maxHeight && size.width >= maxWidth) {
                 maxHeight = size.height
                 maxWidth = size.width
-                maxFps = if (fps > maxFps) fps else maxFps
             }
         }
 
         cameraHeight = maxHeight
         cameraWidth = maxWidth
-        cameraFps = maxFps
 
-        requireContext().toast("$cameraHeight x $cameraWidth @ $cameraFps")
+        requireContext().toast("$cameraHeight x $cameraWidth @ $FPS")
     }
 
     fun isFrontCamera(cameraId : String) : Boolean {
@@ -216,7 +211,7 @@ class CameraFragment @Inject constructor() : DaggerFragment() {
         setOutputFile(outputFile.absolutePath)
         setVideoEncodingBitRate(RECORDER_VIDEO_BITRATE)
         setVideoSize(cameraWidth, cameraHeight)
-        setVideoFrameRate(cameraFps)
+        setVideoFrameRate(FPS)
         setVideoEncoder(MediaRecorder.VideoEncoder.H264)
         setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
         setInputSurface(surface)
@@ -387,6 +382,8 @@ class CameraFragment @Inject constructor() : DaggerFragment() {
 
         private const val RECORDER_VIDEO_BITRATE: Int = 10000000
         private const val MIN_REQUIRED_RECORDING_TIME_MILLIS: Long = 1000L
+
+        private const val FPS = 30
     }
 
 }

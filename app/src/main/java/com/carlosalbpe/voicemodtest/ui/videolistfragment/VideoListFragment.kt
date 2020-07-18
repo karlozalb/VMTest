@@ -8,6 +8,8 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.carlosalbpe.voicemodtest.MainActivity
 import com.carlosalbpe.voicemodtest.R
 import com.carlosalbpe.voicemodtest.business.domain.VideoInfo
 import com.carlosalbpe.voicemodtest.framework.io.FileStorage
@@ -17,6 +19,7 @@ import com.carlosalbpe.voicemodtest.ui.videolistfragment.viewmodel.VideoListView
 import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.video_list_fragment.*
 import javax.inject.Inject
+
 
 class VideoListFragment @Inject constructor() : DaggerFragment() {
 
@@ -29,6 +32,7 @@ class VideoListFragment @Inject constructor() : DaggerFragment() {
     private lateinit var viewModel: VideoListViewModel
 
     lateinit var videosAdapter: VideoAdapter
+    lateinit var layoutManager: LinearLayoutManager
 
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?,
@@ -58,8 +62,7 @@ class VideoListFragment @Inject constructor() : DaggerFragment() {
             override fun onClick(video: VideoInfo) {
                 viewModel.deleteVideo(video).observe(viewLifecycleOwner, Observer {result ->
                     if (result.status == Status.SUCCESS) {
-
-                        context?.toast(getString(R.string.delete_file_success))
+                        deleteFileFromDevice(video)
                     }else if (result.status == Status.ERROR){
                         context?.toast(getString(R.string.delete_file_error))
                     }
@@ -67,12 +70,22 @@ class VideoListFragment @Inject constructor() : DaggerFragment() {
             }
 
         })
-        videos_rv.layoutManager = LinearLayoutManager(requireContext())
+
+        layoutManager = LinearLayoutManager(requireContext())
+
+        videos_rv.layoutManager = layoutManager
         videos_rv.adapter = videosAdapter
+
+        videos_rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                updateFabVisibility(dx,dy)
+            }
+        })
 
         viewModel.getVideos().observe(viewLifecycleOwner, Observer {result ->
             if (result.status == Status.SUCCESS) {
                 videosAdapter.setItems(result.data)
+                updateFabVisibility(0,0)
                 setEmptyView(result.data)
             }else if (result.status == Status.ERROR){
                 context?.toast(getString(R.string.list_fetch_error))
@@ -80,10 +93,19 @@ class VideoListFragment @Inject constructor() : DaggerFragment() {
         })
     }
 
+    fun updateFabVisibility(dx: Int, dy: Int){
+        var activity = (activity as MainActivity)
+
+        val pos = layoutManager.findLastCompletelyVisibleItemPosition()
+        val numItems: Int = videosAdapter.itemCount
+
+        if (dy < 0 && !activity.isShown() || pos >= numItems) activity.showFab() else if (dy > 0 && activity.isShown()) activity.hideFab()
+    }
+
     fun deleteFileFromDevice(video : VideoInfo){
         fileStorage.deleteFile(video.path).observe(viewLifecycleOwner, Observer { result->
             if (result.status == Status.SUCCESS) {
-                //OK!!!!
+                context?.toast(getString(R.string.delete_file_success))
             }else if (result.status == Status.ERROR){
                 context?.toast(getString(R.string.delete_file_error))
                 findNavController().popBackStack()

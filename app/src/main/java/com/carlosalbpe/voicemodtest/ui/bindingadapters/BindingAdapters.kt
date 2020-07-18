@@ -17,8 +17,9 @@ fun loadThumbnail(view: View, videoInfo: VideoInfo) {
             .centerCrop()
 
         Glide.with(view.context)
-            .asBitmap()
-            .load(Uri.fromFile(File(videoInfo.path))) // or URI/p
+            .load(Uri.fromFile(File(videoInfo.path)))
+            .thumbnail()
+            .override(300,300)
             .apply(options)
             .into(view)
     }

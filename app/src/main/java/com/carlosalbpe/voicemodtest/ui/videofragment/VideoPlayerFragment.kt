@@ -90,8 +90,11 @@ class VideoPlayerFragment : DaggerFragment(), MediaPlayer.OnPreparedListener {
                 mediaPlayer?.apply {
                     setDisplay(currentHolder)
                     setDataSource(currentVideo!!.path)
-                    setOnPreparedListener(this@VideoPlayerFragment)
                     prepareAsync()
+                    setOnPreparedListener(this@VideoPlayerFragment)
+                    setOnCompletionListener {
+                        playBackFinished()
+                    }
                 }
             } catch (error: Exception) {
                 error.printStackTrace()
@@ -100,8 +103,12 @@ class VideoPlayerFragment : DaggerFragment(), MediaPlayer.OnPreparedListener {
     }
 
     override fun onPrepared(mp: MediaPlayer?) {
-        mediaPlayer?.start()
+        mp?.start()
         showPauseButton()
+    }
+
+    fun playBackFinished(){
+        showPlayButton()
     }
 
     fun showPlayButton(){

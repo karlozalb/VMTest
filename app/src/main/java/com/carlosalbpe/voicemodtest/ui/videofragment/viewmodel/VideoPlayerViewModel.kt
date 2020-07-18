@@ -1,36 +1,28 @@
 package com.carlosalbpe.voicemodtest.ui.videofragment.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.carlosalbpe.voicemodtest.business.domain.VideoInfo
+import androidx.lifecycle.liveData
 import com.carlosalbpe.voicemodtest.business.usecase.GetVideoUseCase
+import com.carlosalbpe.voicemodtest.framework.utils.BaseViewModel
 import com.carlosalbpe.voicemodtest.framework.utils.Result
 import com.carlosalbpe.voicemodtest.framework.utils.Status
+import com.carlosalbpe.voicemodtest.ui.utils.getDispatcher
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import java.lang.Exception
 import javax.inject.Inject
 
-class VideoPlayerViewModel @Inject constructor(private val getVideoUseCase: GetVideoUseCase): ViewModel() {
+class VideoPlayerViewModel @Inject constructor(private val getVideoUseCase: GetVideoUseCase, private val dispatcher : CoroutineDispatcher? = null): BaseViewModel() {
 
-    private val videoLd = MutableLiveData<Result<VideoInfo>>()
-
-    fun getVideo(id : Long) : LiveData<Result<VideoInfo>> {
-        fetchVideo(id)
-        return videoLd
+    init {
+        defaultDispatcher = Dispatchers.IO
     }
 
-    private fun fetchVideo(id : Long) {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                videoLd.postValue(Result(status = Status.LOADING))
-                videoLd.postValue(Result(status = Status.SUCCESS, message = "Ok", data = getVideoUseCase(id)))
-            } catch (error : Exception) {
-                videoLd.postValue(Result(status = Status.ERROR, message = error.message ?: ""))
-                error.printStackTrace()
-            }
+    fun getVideo(id : Long) = liveData(getDispatcher(dispatcher,defaultDispatcher)) {
+        try {
+            emit(Result(status = Status.SUCCESS, message = "Ok", data = getVideoUseCase(id)))
+        } catch (error : Exception) {
+            emit(Result(status = Status.ERROR, message = error.message ?: ""))
+            error.printStackTrace()
         }
     }
 
