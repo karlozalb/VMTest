@@ -1,9 +1,8 @@
 package com.carlosalbpe.voicemodtest.framework.datasources
 
-import com.carlosalbpe.voicemodtest.business.data.VideoDataSource
+import com.carlosalbpe.voicemodtest.data.VideoDataSource
 import com.carlosalbpe.voicemodtest.framework.database.VideoDatabase
-import com.carlosalbpe.voicemodtest.business.domain.VideoInfo
-import com.carlosalbpe.voicemodtest.framework.io.FileStorage
+import com.carlosalbpe.voicemodtest.data.model.VideoInfo
 import java.io.File
 import javax.inject.Inject
 

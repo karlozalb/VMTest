@@ -1,6 +1,6 @@
 package com.carlosalbpe.voicemodtest.ui.videolistfragment
 
-import com.carlosalbpe.voicemodtest.business.domain.VideoInfo
+import com.carlosalbpe.voicemodtest.data.model.VideoInfo
 
 interface IClickItemInterface {
 

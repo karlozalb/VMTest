@@ -1,9 +1,9 @@
 package com.carlosalbpe.voicemodtest.ui.videolistfragment.viewmodel
 
 import androidx.lifecycle.*
-import com.carlosalbpe.voicemodtest.business.domain.VideoInfo
-import com.carlosalbpe.voicemodtest.business.usecase.DeleteVideoUseCase
-import com.carlosalbpe.voicemodtest.business.usecase.GetVideosUseCase
+import com.carlosalbpe.voicemodtest.data.model.VideoInfo
+import com.carlosalbpe.voicemodtest.usecase.DeleteVideoUseCase
+import com.carlosalbpe.voicemodtest.usecase.GetVideosUseCase
 import com.carlosalbpe.voicemodtest.framework.utils.BaseViewModel
 import com.carlosalbpe.voicemodtest.framework.utils.Result
 import com.carlosalbpe.voicemodtest.framework.utils.Status

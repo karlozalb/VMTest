@@ -1,19 +1,3 @@
-/*
- * Copyright 2020 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.carlosalbpe.voicemodtest.ui.camera
 
 import android.graphics.Point
@@ -60,12 +44,10 @@ fun <T>getPreviewOutputSize(
         format: Int? = null
 ): Size {
 
-    // Find which is smaller: screen or 1080p
     val screenSize = getDisplaySmartSize(display)
     val hdScreen = screenSize.long >= SIZE_1080P.long || screenSize.short >= SIZE_1080P.short
     val maxSize = if (hdScreen) SIZE_1080P else screenSize
 
-    // If image format is provided, use it to determine supported sizes; else use target class
     val config = characteristics.get(
             CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)!!
     if (format == null)
@@ -75,11 +57,9 @@ fun <T>getPreviewOutputSize(
     val allSizes = if (format == null)
         config.getOutputSizes(targetClass) else config.getOutputSizes(format)
 
-    // Get available sizes and sort them by area from largest to smallest
     val validSizes = allSizes
             .sortedWith(compareBy { it.height * it.width })
             .map { SmartSize(it.width, it.height) }.reversed()
 
-    // Then, get the largest output size that is smaller or equal than our max size
     return validSizes.first { it.long <= maxSize.long && it.short <= maxSize.short }.size
 }

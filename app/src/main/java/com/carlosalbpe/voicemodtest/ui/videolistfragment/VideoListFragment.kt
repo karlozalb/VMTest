@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.carlosalbpe.voicemodtest.MainActivity
 import com.carlosalbpe.voicemodtest.R
-import com.carlosalbpe.voicemodtest.business.domain.VideoInfo
+import com.carlosalbpe.voicemodtest.data.model.VideoInfo
 import com.carlosalbpe.voicemodtest.framework.io.FileStorage
 import com.carlosalbpe.voicemodtest.framework.utils.Status
 import com.carlosalbpe.voicemodtest.ui.utils.toast
@@ -21,7 +21,7 @@ import kotlinx.android.synthetic.main.video_list_fragment.*
 import javax.inject.Inject
 
 
-class VideoListFragment @Inject constructor() : DaggerFragment() {
+class VideoListFragment : DaggerFragment() {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory

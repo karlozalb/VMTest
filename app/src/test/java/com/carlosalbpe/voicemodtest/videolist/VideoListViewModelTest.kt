@@ -1,17 +1,16 @@
 package com.carlosalbpe.voicemodtest.videolist
 
 import android.os.Build
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
-import com.carlosalbpe.voicemodtest.business.data.VideoRepository
-import com.carlosalbpe.voicemodtest.business.domain.VideoInfo
-import com.carlosalbpe.voicemodtest.business.usecase.DeleteVideoUseCase
-import com.carlosalbpe.voicemodtest.business.usecase.GetVideosUseCase
+import com.carlosalbpe.voicemodtest.data.VideoRepository
+import com.carlosalbpe.voicemodtest.data.model.VideoInfo
+import com.carlosalbpe.voicemodtest.usecase.DeleteVideoUseCase
+import com.carlosalbpe.voicemodtest.usecase.GetVideosUseCase
 import com.carlosalbpe.voicemodtest.framework.datasources.VideoLocalDataSourceImpl
 import com.carlosalbpe.voicemodtest.testutils.observeOnce
 import com.carlosalbpe.voicemodtest.ui.videolistfragment.viewmodel.VideoListViewModel
 import com.nhaarman.mockitokotlin2.mock
-import junit.framework.Assert.*
+import org.junit.Assert.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
@@ -21,8 +20,6 @@ import org.mockito.Mock
 import org.mockito.Mockito.`when`
 import com.carlosalbpe.voicemodtest.framework.utils.Result
 import com.carlosalbpe.voicemodtest.framework.utils.Status
-import com.carlosalbpe.voicemodtest.testutils.getOrAwaitValue
-import com.nhaarman.mockitokotlin2.verify
 import org.mockito.MockitoAnnotations
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config

@@ -13,6 +13,9 @@
     <string name="list_fetch_error">Error fetching list</string>
     <string name="no_videos_yet">There are no videos yet</string>
     <string name="create_file_error">Error creating temp file</string>
+    <string name="select_camera_message">Select a camera</string>
+    <string name="front_camera">Front camera</string>
+    <string name="back_camera">Back camera</string>
 
 
 </resources>

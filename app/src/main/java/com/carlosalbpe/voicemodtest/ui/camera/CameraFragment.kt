@@ -17,6 +17,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.carlosalbpe.voicemodtest.R
 import com.carlosalbpe.voicemodtest.framework.io.FileStorage
 import com.carlosalbpe.voicemodtest.framework.utils.Status
@@ -35,9 +36,10 @@ import kotlin.coroutines.suspendCoroutine
 /**
  *
  * Modified version of CameraFragment from https://github.com/android/camera-samples
+ * CarlosA
  *
  */
-class CameraFragment @Inject constructor() : DaggerFragment() {
+class CameraFragment : DaggerFragment() {
 
     private lateinit var outputFile : File
     private lateinit var cameraId : String
@@ -90,10 +92,15 @@ class CameraFragment @Inject constructor() : DaggerFragment() {
 
     private var recordingStartMillis: Long = 0L
 
+    private val args: CameraFragmentArgs by navArgs()
+    private var isFrontCamera : Boolean = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        configBackCamera()
+        isFrontCamera = args.isFront
+
+        configCamera()
      }
 
     override fun onDestroyView() {
@@ -151,25 +158,23 @@ class CameraFragment @Inject constructor() : DaggerFragment() {
 
             override fun surfaceCreated(holder: SurfaceHolder) {
 
-                // Selects appropriate preview size and configures view finder
                 val previewSize = getPreviewOutputSize(
                     viewFinder.display, characteristics, SurfaceHolder::class.java)
                 Log.d(TAG, "View finder size: ${viewFinder.width} x ${viewFinder.height}")
                 Log.d(TAG, "Selected preview size: $previewSize")
                 viewFinder.setAspectRatio(previewSize.width, previewSize.height)
 
-                // To ensure that size is set, initialize camera in the view's thread
                 viewFinder.post { initializeCamera() }
             }
         })
     }
 
-    fun configBackCamera(){
+    fun configCamera(){
         var cameraIds = cameraManager.cameraIdList
 
         //Back camera
         cameraId = cameraIds.first { cameraId ->
-            isBackCamera(cameraId)
+            if (isFrontCamera) isFrontCamera(cameraId) else isBackCamera(cameraId)
         }
 
         //Camera properties
@@ -179,7 +184,7 @@ class CameraFragment @Inject constructor() : DaggerFragment() {
         var maxHeight  = 0
         var maxWidth = 0
 
-        //Get the config with the highest resolution and the max fps for that resolution
+        //Get the config with the highest resolution
         val targetClass = MediaRecorder::class.java
         cameraConfig.getOutputSizes(targetClass).forEach { size ->
             val seconds = cameraConfig.getOutputMinFrameDuration(targetClass, size) / 1000000000.0
@@ -205,7 +210,9 @@ class CameraFragment @Inject constructor() : DaggerFragment() {
 
     private fun createRecorder(surface: Surface) = MediaRecorder().apply {
         setAudioSource(MediaRecorder.AudioSource.MIC)
-        setOrientationHint(90) //Back camera + portrait mode.
+        //This won't work for ALL devices for sure, but it works for all my devices/emulators.
+        //It will need a deep research :D
+        setOrientationHint(if (isFrontCamera) 270 else 90)
         setVideoSource(MediaRecorder.VideoSource.SURFACE)
         setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
         setOutputFile(outputFile.absolutePath)
@@ -230,7 +237,7 @@ class CameraFragment @Inject constructor() : DaggerFragment() {
 
     private fun initializeCamera() = lifecycleScope.launch(Dispatchers.Main) {
 
-        // Open the selected camera (back camera in this specific case)
+        // Open the selected camera
         camera = openCamera(cameraManager, cameraId, cameraHandler)
 
         val targets = listOf(viewFinder.holder.surface, recorderSurface)

@@ -1,6 +1,6 @@
-package com.carlosalbpe.voicemodtest.business.usecase
+package com.carlosalbpe.voicemodtest.usecase
 
-import com.carlosalbpe.voicemodtest.business.data.VideoRepository
+import com.carlosalbpe.voicemodtest.data.VideoRepository
 import java.io.File
 import javax.inject.Inject
 

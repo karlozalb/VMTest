@@ -3,7 +3,6 @@ package com.carlosalbpe.voicemodtest
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.action.ViewActions
-import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.intent.rule.IntentsTestRule
@@ -38,15 +37,30 @@ class VideoTest {
         assertEquals("com.carlosalbpe.voicemodtest", appContext.packageName)
     }
 
+    @Test
+    fun recordVideoWithFrontCamera(){
+        recordVideoWithCamera(true)
+    }
 
     @Test
-    fun recordVideo(){
+    fun recordVideoWithBackCamera(){
+        recordVideoWithCamera(false)
+    }
+
+    fun recordVideoWithCamera(isFront : Boolean){
         Espresso.onView(isRoot()).perform(waitFor(2000))
         Espresso.onView(withId(R.id.videos_rv))
 
         var previousCount = countRecycleViewItems()
 
         Espresso.onView(withId(R.id.fab)).perform(ViewActions.click())
+
+        //Front camera.
+        if (isFront) {
+            Espresso.onView(withId(R.id.frontCameraBtn)).perform(ViewActions.click())
+        }else{  //Back camera.
+            Espresso.onView(withId(R.id.backCameraBtn)).perform(ViewActions.click())
+        }
 
         //To check if CameraFragment is displayed
         Espresso.onView(withId(R.id.view_finder))

@@ -4,7 +4,7 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
-import com.carlosalbpe.voicemodtest.business.domain.VideoInfo
+import com.carlosalbpe.voicemodtest.data.model.VideoInfo
 
 @Dao
 interface VideoInfoDao {

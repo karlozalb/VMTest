@@ -1,7 +1,7 @@
 package com.carlosalbpe.voicemodtest.ui.camera.viewmodel
 
 import androidx.lifecycle.*
-import com.carlosalbpe.voicemodtest.business.usecase.SaveVideoUseCase
+import com.carlosalbpe.voicemodtest.usecase.SaveVideoUseCase
 import com.carlosalbpe.voicemodtest.framework.utils.BaseViewModel
 import java.io.File
 import java.lang.Exception

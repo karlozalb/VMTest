@@ -23,7 +23,7 @@ class MainActivity : DaggerAppCompatActivity() {
             requestPremissions()
         }
 
-        //Nav listener to hide/shiw FAB and ActionBar
+        //Nav listener to hide/show FAB and ActionBar
         findNavController(R.id.nav_host_fragment).addOnDestinationChangedListener { controller, destination, _ ->
             if(controller.graph.startDestination == destination.id){
                 supportActionBar?.show()
@@ -46,7 +46,7 @@ class MainActivity : DaggerAppCompatActivity() {
     }
 
     fun navigateToCamera(){
-        findNavController(R.id.nav_host_fragment).navigate(R.id.action_VideoFragment_to_cameraFragment)
+        findNavController(R.id.nav_host_fragment).navigate(R.id.action_VideoListFragment_to_cameraSelectDialogFragment)
     }
 
     fun requestPremissions(){

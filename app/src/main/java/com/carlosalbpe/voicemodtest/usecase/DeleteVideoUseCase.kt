@@ -1,7 +1,7 @@
-package com.carlosalbpe.voicemodtest.business.usecase
+package com.carlosalbpe.voicemodtest.usecase
 
-import com.carlosalbpe.voicemodtest.business.data.VideoRepository
-import com.carlosalbpe.voicemodtest.business.domain.VideoInfo
+import com.carlosalbpe.voicemodtest.data.VideoRepository
+import com.carlosalbpe.voicemodtest.data.model.VideoInfo
 import javax.inject.Inject
 
 class DeleteVideoUseCase @Inject constructor(private val repository: VideoRepository) {

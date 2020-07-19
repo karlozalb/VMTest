@@ -11,7 +11,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.navArgs
 import com.carlosalbpe.voicemodtest.R
-import com.carlosalbpe.voicemodtest.business.domain.VideoInfo
+import com.carlosalbpe.voicemodtest.data.model.VideoInfo
 import com.carlosalbpe.voicemodtest.ui.videofragment.viewmodel.VideoPlayerViewModel
 import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_video_player.*
@@ -61,7 +61,7 @@ class VideoPlayerFragment : DaggerFragment(), MediaPlayer.OnPreparedListener {
             override fun surfaceCreated(holder: SurfaceHolder?) {
                 Log.v(TAG,"Surface created")
                 currentHolder = holder
-                //This call will be useless 99.999999999% of times, but... who knows. (Carlos AP)
+                //This call will be useless 99.999999999% of times, but... who knows.
                 setUpMediaPlayer()
             }
         })

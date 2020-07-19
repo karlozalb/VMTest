@@ -2,8 +2,8 @@ package com.carlosalbpe.voicemodtest.framework.di
 
 import android.app.Application
 import androidx.room.Room
-import com.carlosalbpe.voicemodtest.business.data.VideoDataSource
-import com.carlosalbpe.voicemodtest.business.data.VideoRepository
+import com.carlosalbpe.voicemodtest.data.VideoDataSource
+import com.carlosalbpe.voicemodtest.data.VideoRepository
 import com.carlosalbpe.voicemodtest.framework.database.VideoDatabase
 import com.carlosalbpe.voicemodtest.framework.io.FileStorage
 import com.carlosalbpe.voicemodtest.framework.io.InternalFileStorage

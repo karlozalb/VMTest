@@ -1,6 +1,6 @@
-package com.carlosalbpe.voicemodtest.business.data
+package com.carlosalbpe.voicemodtest.data
 
-import com.carlosalbpe.voicemodtest.business.domain.VideoInfo
+import com.carlosalbpe.voicemodtest.data.model.VideoInfo
 import java.io.File
 
 class VideoRepository (private val dataSource: VideoDataSource) {

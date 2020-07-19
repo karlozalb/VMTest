@@ -11,16 +11,20 @@
         android:label="@string/video_error"
         tools:layout="@layout/video_list_fragment">
         <action
-            android:id="@+id/action_VideoFragment_to_cameraFragment"
-            app:destination="@id/cameraFragment" />
-        <action
             android:id="@+id/action_VideoFragment_to_videoPlayerFragment"
             app:destination="@id/videoPlayerFragment" />
+        <action
+            android:id="@+id/action_VideoListFragment_to_cameraSelectDialogFragment"
+            app:destination="@id/cameraSelectDialogFragment" />
     </fragment>
     <fragment
         android:id="@+id/cameraFragment"
         android:name="com.carlosalbpe.voicemodtest.ui.camera.CameraFragment"
-        android:label="CameraFragment" />
+        android:label="CameraFragment" >
+        <argument
+            android:name="isFront"
+            app:argType="boolean" />
+    </fragment>
     <fragment
         android:id="@+id/videoPlayerFragment"
         android:name="com.carlosalbpe.voicemodtest.ui.videofragment.VideoPlayerFragment"
@@ -30,4 +34,12 @@
             android:name="id"
             app:argType="long" />
     </fragment>
+    <dialog
+        android:id="@+id/cameraSelectDialogFragment"
+        android:name="com.carlosalbpe.voicemodtest.ui.videolistfragment.CameraSelectDialogFragment"
+        android:label="CameraSelectDialogFragment" >
+        <action
+            android:id="@+id/action_cameraSelectDialogFragment_to_cameraFragment"
+            app:destination="@id/cameraFragment" />
+    </dialog>
 </navigation>

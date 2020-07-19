@@ -1,4 +1,4 @@
-package com.carlosalbpe.voicemodtest.business.domain
+package com.carlosalbpe.voicemodtest.data.model
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

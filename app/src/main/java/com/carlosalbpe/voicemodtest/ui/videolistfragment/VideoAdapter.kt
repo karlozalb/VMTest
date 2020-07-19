@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.carlosalbpe.voicemodtest.R
-import com.carlosalbpe.voicemodtest.business.domain.VideoInfo
+import com.carlosalbpe.voicemodtest.data.model.VideoInfo
 import com.carlosalbpe.voicemodtest.databinding.VideoListItemBinding
 
 class VideoAdapter(private var items : List<VideoInfo>, private val listener : IClickItemInterface, private val deleteListener : IClickItemInterface) : RecyclerView.Adapter<VideoAdapter.VideoViewHolder>() {

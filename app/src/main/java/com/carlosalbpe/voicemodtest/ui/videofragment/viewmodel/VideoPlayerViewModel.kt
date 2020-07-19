@@ -1,7 +1,7 @@
 package com.carlosalbpe.voicemodtest.ui.videofragment.viewmodel
 
 import androidx.lifecycle.liveData
-import com.carlosalbpe.voicemodtest.business.usecase.GetVideoUseCase
+import com.carlosalbpe.voicemodtest.usecase.GetVideoUseCase
 import com.carlosalbpe.voicemodtest.framework.utils.BaseViewModel
 import com.carlosalbpe.voicemodtest.framework.utils.Result
 import com.carlosalbpe.voicemodtest.framework.utils.Status

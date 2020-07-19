@@ -9,6 +9,7 @@ import kotlin.math.roundToInt
 /**
  *
  * Class extracted from https://github.com/android/camera-samples
+ * CarlosA
  *
  */
 class AutoFitSurfaceView @JvmOverloads constructor(
